@@ -1,0 +1,41 @@
+'''
+Chenyu Wang
+Intro to Data Science
+Professor Zinoviev
+4/7/2020
+ForEx Data Findings
+	Upon going through the databases of the ForEx trading system, we found that the user database holds a total of 53,103 users. The total time span of the databases is 1774 days and was found by subtracting the latest time of the databases by the earliest time, which were both found in the user database. Alongside that, the total number of discussion posts, which were found by counting the posts in the discussion_post database, were 9,409 posts.
+	In Figure 1, the number of messages sent is divided by the two possible types and is displayed by using a pie chart. Based off the chart, we found that the most frequent message type was a “FRIEND_LINK_REQUEST” and the least frequent message was a “DIRECT_MESSAGE.”
+	Figure 2 shows the number of each type of discussion post and is displayed on a pie chart. The chart shows that the most common type of discussion post was a question, followed by posts about position and posts about market commentary.
+	Figure 3 is a histogram that displays the activity range of all users. Activity range is the time between the first message sent and the last message sent by the same user in any category. The graph shows that the most frequent activity range amongst all the users is between 0 and 250 days. The least frequent activity range is 1750 days, which is more than 1500 days between the first and last message.
+	The histogram of Figure 4 shows the message activity delay for all types of messages. Message activity delay is the time between the user creation and the first message sent from the same user. According to the graph, both types of messages have similar message activity delay, however the “FRIEND_LINK_REQUEST” type messages have slightly less of a delay than the “DIRECT_MESSAGE” type messages. The most frequent delay time for “FRIEND_LINK_REQUEST” is between 0 and 200 days, with most messages having a delay of 0 days. After that, the number of messages with more than a 200 day delay steadily drops until about 700 days, to which it rises and drops again. Similarly, for the “DIRECT_MESSAGE” messages, the most frequent delay time is between 0 and 200 days. After 200 days, the delay of “DIRECT_MESSAGE” messages drops suddenly, rises, and then steadily drops. 
+	Figure 5, which is a pie chart showing the distribution of discussion categories by post, also shows the most popular category being the “Question” category.
+	Figure 6 shows a histogram of post activity delay, which is the time between the user creation and the first discussion post. The graph shows that most users posted their first discussion post 200 days after their account creation. As the post activity delay gets bigger, the number of users drops steadily until about 1400 days, where it rises.
+	Finally Figure 7 is a box and whiskers plot of the message activity delays in each message type, post activity delay, and activity ranges. According to the graph, the median for the message activity delay in the “FRIEND_LINK_REQUEST” messages is closer to 10^0 and the median for the “DIRECT_MESSAGE” types is a little bit higher than 10^0. For the post activity delay, the graph shows that the median is close to 10^1. Finally, the range graph shows that most activity is between 10^1 and 10^2
+
+
+
+Figure 1, Number of Messages Types Sent
+ 
+Figure 2, Discussion Categories 
+Figure 3, Activity Range
+ 
+
+
+
+
+
+
+Figure 4, Message Activity Delay
+ 
+Figure 5, Number of Discussion Types Started
+ 
+
+
+
+Figure 6, Post Activity Delay
+ 
+
+Figure 7,
+
+'''
