@@ -1,0 +1,133 @@
+'''
+In the attached file, there are four tables that describe users in a ForEx trading system and their communications via direct messages and forum-style discussion boards. The file 'users.tsv' contains unique user ids and account creation dates. The file messages.tsv contains unique message ids, send dates, sender ids (consistent with those in 'users.tsv'), and message types. The file 'discussions.tsv' contains unique discussion ids, creation dates, creator ids (consistent with those in 'users.tsv'), and discussion categories. The file 'discussion_posts.tsv' contain unique post ids, discussion ids (consistent with those in 'discussions.tsv'), and creator ids (consistent with those in 'users.tsv').
+All files are TAB-separated. All times in the tables are expressed in milliseconds, starting on midnight, January 1, 1970. You shall convert the times to days (24hr).
+You shall produce the following deliverables:
+1. Simple descriptive statistics:
+    1. How many users are in the database? Deliverable: A number. 
+    2. What is the time span of the database? Deliverable: The difference between the largest and the smallest timestamps in the database, a number. 
+    3. How many messages of each type have been sent? Deliverable: A pie chart. 
+    4. How many discussions of each type have been started? Deliverable: A pie chart. 
+    5. How many discussion posts have been posted? Deliverable: A number.
+2. Activity range is the time between the first and the last message (in ANY category) sent by the same user. What is the distribution of activity ranges? Deliverable: a histogram. 
+3. Message activity delay is the time between user account creation and sending the first user message in a specific category. What is the distribution of message activity delays in EACH category? Deliverable: a histogram for each category (ideally all histograms shall be in the same chart, semi-transparent, with legend).
+4. What is the distribution of discussion categories by the number of posts? What is the most popular category? Deliverable: a pie chart, with the most popular category highlighted.
+5. Post activity delay is the time between user account creation and posting the first discussion message. What is the distribution of post activity delays in the most popular category? Deliverable: a histogram. Note: The most popular category shall be carried over from the previous question.
+6. A box plot with whiskers that shows all appropriate statistics for message activity delays in EACH category, post activity delays, and activity ranges.
+Finally, you shall write a short report that summarizes your findings in plain English language (for someone who knows neither CS nor Stats).
+You shall be able to produce all deliverables in one program by applying appropriate transformations to one DataFrame, assembled from the four tabular files (however, two- and three-way merges shall work, too). The Y axis of all histograms shall be on the logarithmic scale.
+You must use Pandas. You may not use CSV readers or any low-level Python tools to read files. You may not use any loops or list comprehensions over table rows. (Loops over columns may be allowed, if necessary.)
+'''
+
+# Chenyu Wang 
+# Import pandas and os to access files
+import pandas as pd
+import os
+import matplotlib.pyplot as plt
+
+try:
+    os.chdir("traders")
+    discussion_posts = pd.read_csv("discussion_posts.tsv", sep="\t")
+    discussions = pd.read_csv("discussions.tsv", sep="\t")
+    messages = pd.read_csv("messages.tsv", sep="\t")
+    users = pd.read_csv("users.tsv", sep="\t")
+    
+    # part code of post activity delay 
+    table1=(pd.merge(users,discussion_posts,left_on='id',right_on='creator_id')).groupby('creator_id')
+
+    # part code of box plot 
+    table2=(pd.merge(users,messages,left_on="id",right_on="sender_id")).groupby("id_x")
+    small_time=table2.min()
+    friend_request=small_time.loc[small_time["type"] == "FRIEND_LINK_REQUEST"]
+    fri_req_delay=(friend_request["sendDate"]-friend_request["memberSince"])/(24*60*60*1000)
+    direct_mess=small_time.loc[small_time["type"] == "DIRECT_MESSAGE"]
+    dir_mess_delay=(direct_mess["sendDate"]-direct_mess["memberSince"])/(24*60*60*1000)
+
+    # Number of users and time span
+    print("Number of users in database: " + str(users['id'].count()))
+    print("Time span of the database: " + str((discussions['createDate'].max() - users["memberSince"].min())/(24*60*60*1000)))
+    
+    # Pie chart on message types
+    message_type = pd.DataFrame({'Types': messages['type'].value_counts()})
+    message_type_plot = message_type.plot.pie(y='Types', figsize=(10, 10), title="Number of Message Types Sent", legend=True)
+    plt.savefig('Num_Message_Types.png')
+
+    # Pie chart on discussion types
+    discussion_type = pd.DataFrame({"Categories": discussions['discussionCategory'].value_counts()})
+    discussion_type_plot = discussion_type.plot.pie(y='Categories', figsize=(10, 10), title="Number of Discussion Types Started")
+    plt.savefig('Num_Discussion_Types.png')
+
+    # Number of discussions
+    print("Number of discussion posts: " + str(discussion_posts['id'].count()))
+
+    # Activity range
+    activity_sort = messages.groupby(['sender_id']).sendDate
+    activity_range = (activity_sort.last() - activity_sort.first()) / (24*60*60*1000)
+    activity_range = activity_range.to_frame()
+    # print(activity_range)
+    activity_range.columns = ["Message time range"]
+    activity_range_plot = activity_range.plot.hist(bins=50, logy=True)
+    activity_range_plot.set_xlabel('Time (days)')
+    activity_range_plot.set_title('Activity Range')
+    plt.savefig('Activity_Range.png')
+
+    # Message Activity Delay
+    user_messages = users.merge(messages, left_on='id', right_on='sender_id')
+    user_messages_sendDate = user_messages.groupby(['id_x', 'type'], as_index=False).sendDate
+    user_messages_memberSince = user_messages.groupby(['id_x', 'type'], as_index=False).memberSince
+    message_activity = (user_messages_sendDate.first().sendDate - user_messages_memberSince.first().memberSince) \
+                       / (24*60*60*1000)
+    message_activity_delay = pd.DataFrame({"id": user_messages_sendDate.first().id_x,
+                                           "type": user_messages_sendDate.first().type, "delay": message_activity})
+    mess_type1 = message_activity_delay.loc[message_activity_delay['type'] == "DIRECT_MESSAGE"]
+    mess_type2 = message_activity_delay.loc[message_activity_delay['type'] == "FRIEND_LINK_REQUEST"]
+    mess_type1 = mess_type1.groupby(['id']).first()
+    mess_type2 = mess_type2.groupby(['id']).first()
+    act_delay = pd.DataFrame({"DIRECT_MESSAGE": mess_type1.delay, "FRIEND_LINK_REQUEST": mess_type2.delay})
+    act_delay_plot = act_delay.plot.hist(bins=50, alpha=0.4, logy=True)
+    act_delay_plot.set_xlabel('Time (days)')
+    act_delay_plot.set_title('Message Activity Delay')
+    plt.savefig('Message_Activity_Delay.png')
+
+    # pie chat of discussion categories
+    dis_category = pd.DataFrame({'category': discussions['discussionCategory'].value_counts()})
+    dis_category_pie = dis_category.plot.pie(y='category', figsize=(10, 10), title="Discussion Categories", legend=True)
+    plt.savefig('discussion_categories.png')
+
+    # post activity delay 
+    creation_time=table1.min()
+    post_delay=(creation_time['createDate']-creation_time['memberSince'])/(24*60*60*1000)
+    
+    plt.figure(6,figsize=(10,10))
+    plt.xlabel("times")
+    plt.ylabel("users")
+    plt.title("Post Activity Delay")
+    plt.hist(post_delay,log=True)
+    plt.savefig("post_delay.png")
+
+    # box plot
+    plt.figure(7,figsize=(10,10))
+    plt.subplot(1, 4, 1)
+    plt.title('friend request')
+    plt.boxplot(fri_req_delay)
+    plt.yscale('log')
+    
+    plt.subplot(1, 4, 2)
+    plt.title('direct message')
+    plt.boxplot(dir_mess_delay)
+    plt.yscale('log')
+    
+    plt.subplot(1, 4, 3)
+    plt.title('Post Activity')
+    plt.boxplot(post_delay)
+    plt.yscale('log')
+    
+    plt.subplot(1, 4, 4)
+    plt.title('range')
+    plt.boxplot(activity_range)
+    plt.yscale('log')
+    
+    plt.savefig('box_plot.png')
+
+except FileNotFoundError:
+    print("Traders file is not found.")
+
