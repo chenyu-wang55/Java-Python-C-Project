@@ -1,0 +1,11 @@
+'''
+Piont2D 数组的运用 计算多边形的面积，周长
+Create class Polygon that represents a polygon as an array of Point2D (see section 9.6.3). Implement the following public methods:
+* Polygon(Point2D[] vertexes) - create a new Polygon with the vertexes as described in the parameter. The method must create an internal private attribute for the vertexes and copy the points from the parameter to the new array (because the value of the parameter may change after the creation of the polygon and you do not want the shape of the polygon to change, too).
+* double area() - calculate and return the area of the polygon
+* double perimeter() - calculate and return the perimeter of the polygon; do not forget that the closing edges of the polygon starts at the last vertex of the array and ends at the first vertex
+* Polygon extents() - calculate the extent of the polygon (the smallest upright rectangle that entirely encloses the polygon); the extent is also a Polygon, because every rectangle is a polygon.
+* String toString() - return the content of the array of vertexes as a string (in any recognizable way); use Point2D.toString() to serialize individual vertexes.
+The latter four methods will always return the same values because the shape of the polygon cannot be changed. Implement the methods in such a way that they calculate the respective values only once, at the first call, and then simply return the previously computed cached results.
+Create the main class PolygontTest. Create several polygons (a triangle, a square, a general quadrilateral, a pentagon) and report their areas, perimeters, and extents.
+'''
