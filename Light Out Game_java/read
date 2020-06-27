@@ -1,0 +1,13 @@
+'''
+运用 java实现一个开灯关灯游戏，开始状态随机，最后需要全关灯或者全亮灯，程序自动运行并且计算次数
+Create a simple implementation of the Lights Out game. Create class LightsOut with the following public methods:
+* LightsOut(int m, int n) - create a game field with m rows and n columns of patches, and randomly initialize it by calling reset(), see below
+* void reset() - randomly initialize the game field
+* boolean getPatch(int x, int y) - get the value of the patch in the x'th row and y'th column; if either x or y is not a valid position, throw an exception
+* void setPatch(int x, int y, boolean newValue) - set the value of the patch in the x'th row and y'th column to newValue; if either x or y is not a valid position, throw an exception
+* void togglePatch(int x, int y) - toggle the state of  the patch in the x'th row and y'th and its immediate 4 neighbors; if either x or y is not a valid position, throw an exception
+* boolean isDark() - return true if all patches are dark (set to true) and false, otherwise
+* boolean isWhite() - return true if all patches are white (set to false) and false, otherwise
+Represent the field as a private 2D boolean array. Assume that the array is wrapped-around both horizontally and vertically (the right neighbor of a patch in the m'th column is a patch in the same row in the 1st column, etc).
+Create the main class LightsOutTest. Ask the user to enter the size of the field (m and n) and create a LightsOut object of the appropriate size. Toggle random patches until the field becomes either completely dark or white, whatever comes first. Display the number of steps.
+'''
