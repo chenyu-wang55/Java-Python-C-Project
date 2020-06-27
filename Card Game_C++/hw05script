@@ -1,0 +1,506 @@
+Script started on 2019-12-17 00:35:35-0500
+]0;chenyu@chenyu-VirtualBox: ~/CS/CS331_HW05[01;32mchenyu@chenyu-VirtualBox[00m:[01;34m~/CS/CS331_HW05[00m$ cat main.cpp
+//
+//  main.cpp
+//  Program: CS331_HW05
+//  Chenyu Wang
+//  Description:It is a crad game. User get points from some type of card.
+//  Last Modifity date:12/17/2019
+//
+//  Created by Chenyu Wang on 11/24/19.
+//  Copyright © 2019 chenyu wang. All rights reserved.
+//
+
+#include "CardDeck.h"
+#include <QTextStream>
+#include <QtGui>
+#include <QApplication>
+#include "qmessagebox.h"
+#include "qinputdialog.h"
+
+
+int main(int argc, char * argv[]) {
+    QApplication app(argc, argv);
+    QTextStream cout(stdout);
+    CardDeck deck;
+    CardHand hand;
+    int handSize, playerScore, progScore;
+    cout<<"How many cards in a hand?"<<flush;
+    handSize=QInputDialog::getInt(0, QString("getInt()"),
+        QString ("How many cards in hand?"), 1, 5);
+    QMessageBox::StandardButton sb;
+    do{
+        hand=deck.deal(handSize);
+        cout<<"Here is your hand:"<<endl;
+        cout<<hand.toString()<<endl;
+        playerScore=hand.getValue();
+        cout<<QString("Your score is : %1 points.").arg(playerScore)<<endl;
+        
+        //now a hand for the dealer:
+        hand=deck.deal(handSize);
+        progScore=hand.getValue();
+        cout<<"Here is your hand:"<<endl;
+        cout<<"Here is your hand:"<<endl;
+        cout<<QString("My score is: %1 points.").arg(progScore)<<endl;
+        cout<<QString ("%1 win !!").arg((playerScore > progScore )?"you":"I")<<endl;
+        sb=QMessageBox::question(0, QString("QMessageBox::question()"), QString("Another hand?"), QMessageBox::Yes | QMessageBox::No);
+    }while (sb==QMessageBox::Yes);
+    
+    
+    
+}
+]0;chenyu@chenyu-VirtualBox: ~/CS/CS331_HW05[01;32mchenyu@chenyu-VirtualBox[00m:[01;34m~/CS/CS331_HW05[00m$ cat [K[K[K[K;s
+bash: syntax error near unexpected token `;'
+]0;chenyu@chenyu-VirtualBox: ~/CS/CS331_HW05[01;32mchenyu@chenyu-VirtualBox[00m:[01;34m~/CS/CS331_HW05[00m$ ls
+CardDeck.cpp  CardDeck.h  CardHand.cpp  CardHand.h  hw05script  main.cpp
+]0;chenyu@chenyu-VirtualBox: ~/CS/CS331_HW05[01;32mchenyu@chenyu-VirtualBox[00m:[01;34m~/CS/CS331_HW05[00m$ cat CardDeck.h
+//
+//  CardDeck.hpp
+//  CS331_HW05
+//
+//  Created by Chenyu Wang on 11/24/19.
+//  Copyright © 2019 chenyu wang. All rights reserved.
+//
+
+#ifndef CardDeck_h_
+#define CardDeck_h_
+
+#include "CardHand.h"
+
+class CardDeck{
+    int deck [52];
+    int remain;
+
+public:
+    CardDeck();
+    CardHand deal (int size);
+};
+
+#endif /* CardDeck_hpp */
+]0;chenyu@chenyu-VirtualBox: ~/CS/CS331_HW05[01;32mchenyu@chenyu-VirtualBox[00m:[01;34m~/CS/CS331_HW05[00m$ cat [K[K[K[Kcat CardDeck.h[Kcpp
+//
+//  CardDeck.cpp
+//  CS331_HW05
+//
+//  Created by Chenyu Wang on 11/24/19.
+//  Copyright © 2019 chenyu wang. All rights reserved.
+//
+
+#include "CardDeck.h"
+#include <stdlib.h>
+#include <time.h>
+
+CardDeck::CardDeck()
+{
+    srand(time(0));
+    remain=52;
+    for(int i=0;i<=3;i++){
+        for(int j=0;j<13;j++){
+            deck[i*13+j]=j+1;
+        }
+    }
+}
+
+CardHand CardDeck::deal(int size){
+    int card[52];
+    for(int i=0; i<size; i++){
+       int  r=rand()%remain;
+        card[i]=deck[r];
+        for(int j=r; j<remain-1; j++){
+            deck[j]=deck[j+1];
+        }
+        remain--;
+    }
+    
+    CardHand hand;
+    hand.cardInHand(card,size);
+    return hand;
+}
+]0;chenyu@chenyu-VirtualBox: ~/CS/CS331_HW05[01;32mchenyu@chenyu-VirtualBox[00m:[01;34m~/CS/CS331_HW05[00m$ ls
+CardDeck.cpp  CardDeck.h  CardHand.cpp  CardHand.h  hw05script  main.cpp
+]0;chenyu@chenyu-VirtualBox: ~/CS/CS331_HW05[01;32mchenyu@chenyu-VirtualBox[00m:[01;34m~/CS/CS331_HW05[00m$ cat CardHand.h
+//
+//  CardHand.hpp
+//  CS331_HW05
+//
+//  Created by Chenyu Wang on 11/24/19.
+//  Copyright © 2019 chenyu wang. All rights reserved.
+//
+
+#ifndef CardHand_h_
+#define CardHand_h_
+
+ #include <QString>
+
+class CardHand
+{
+    int card[52];
+    int size;
+    
+public:
+    CardHand();
+    void cardInHand(int card[], int size);
+    QString toString();
+    int getValue();
+    ~CardHand();
+};
+#endif /* CardHand_hpp */
+]0;chenyu@chenyu-VirtualBox: ~/CS/CS331_HW05[01;32mchenyu@chenyu-VirtualBox[00m:[01;34m~/CS/CS331_HW05[00m$ cat[K[K[Kcat CardHand.h[Kcpp
+//
+//  CardHand.cpp
+//  CS331_HW05
+//
+//  Created by Chenyu Wang on 11/24/19.
+//  Copyright © 2019 chenyu wang. All rights reserved.
+//
+
+#include "CardHand.h"
+CardHand::CardHand()
+{
+	int card[52];
+	int size;
+}
+void CardHand::cardInHand(int card[],int size){
+    for (int i=0; i<size; i++){
+        this->card[i]=card[i];
+    }
+    this->size=size;
+}
+
+int CardHand::getValue(){
+    int value=0;
+    for (int i=0; i<size; i++){
+        int n=0;
+        if(card[i]==1)
+            value+=4;
+        else if(card[i]==13)
+            value+=3;
+        else if(card[i]==12)
+            value+=2;
+        else if(card[i]==11)
+            value+=1;
+        else
+            value+=0;
+    }
+    return value;
+}
+
+QString CardHand::toString(){
+	QString s="";
+	for(int i=0; i<size-1; i++){
+		s=s+QString::number(card[i])+";";
+	}
+	s=s+QString::number(card[size-1]);
+	return s;
+}
+
+CardHand::~CardHand(){
+    
+}
+]0;chenyu@chenyu-VirtualBox: ~/CS/CS331_HW05[01;32mchenyu@chenyu-VirtualBox[00m:[01;34m~/CS/CS331_HW05[00m$ qmake -po[Kroject
+]0;chenyu@chenyu-VirtualBox: ~/CS/CS331_HW05[01;32mchenyu@chenyu-VirtualBox[00m:[01;34m~/CS/CS331_HW05[00m$ qmkae [K[K[K[K[Kmake 
+]0;chenyu@chenyu-VirtualBox: ~/CS/CS331_HW05[01;32mchenyu@chenyu-VirtualBox[00m:[01;34m~/CS/CS331_HW05[00m$ ls
+CardDeck.cpp  CardHand.cpp  CS331_HW05.pro  main.cpp
+CardDeck.h    CardHand.h    hw05script      Makefile
+]0;chenyu@chenyu-VirtualBox: ~/CS/CS331_HW05[01;32mchenyu@chenyu-VirtualBox[00m:[01;34m~/CS/CS331_HW05[00m$ cat Makefile 
+#############################################################################
+# Makefile for building: CS331_HW05
+# Generated by qmake (2.01a) (Qt 4.8.7) on: Tue Dec 17 00:36:46 2019
+# Project:  CS331_HW05.pro
+# Template: app
+# Command: /usr/lib/x86_64-linux-gnu/qt4/bin/qmake -o Makefile CS331_HW05.pro
+#############################################################################
+
+####### Compiler, tools and options
+
+CC            = gcc
+CXX           = g++
+DEFINES       = -DQT_NO_DEBUG -DQT_GUI_LIB -DQT_CORE_LIB -DQT_SHARED
+CFLAGS        = -m64 -pipe -O2 -Wall -W -D_REENTRANT $(DEFINES)
+CXXFLAGS      = -m64 -pipe -O2 -Wall -W -D_REENTRANT $(DEFINES)
+INCPATH       = -I/usr/share/qt4/mkspecs/linux-g++-64 -I. -I/usr/include/qt4/QtCore -I/usr/include/qt4/QtGui -I/usr/include/qt4 -I. -I.
+LINK          = g++
+LFLAGS        = -m64 -Wl,-O1
+LIBS          = $(SUBLIBS)  -L/usr/lib/x86_64-linux-gnu -lQtGui -lQtCore -lpthread 
+AR            = ar cqs
+RANLIB        = 
+QMAKE         = /usr/lib/x86_64-linux-gnu/qt4/bin/qmake
+TAR           = tar -cf
+COMPRESS      = gzip -9f
+COPY          = cp -f
+SED           = sed
+COPY_FILE     = $(COPY)
+COPY_DIR      = $(COPY) -r
+STRIP         = strip
+INSTALL_FILE  = install -m 644 -p
+INSTALL_DIR   = $(COPY_DIR)
+INSTALL_PROGRAM = install -m 755 -p
+DEL_FILE      = rm -f
+SYMLINK       = ln -f -s
+DEL_DIR       = rmdir
+MOVE          = mv -f
+CHK_DIR_EXISTS= test -d
+MKDIR         = mkdir -p
+
+####### Output directory
+
+OBJECTS_DIR   = ./
+
+####### Files
+
+SOURCES       = CardDeck.cpp \
+		CardHand.cpp \
+		main.cpp 
+OBJECTS       = CardDeck.o \
+		CardHand.o \
+		main.o
+DIST          = /usr/share/qt4/mkspecs/common/unix.conf \
+		/usr/share/qt4/mkspecs/common/linux.conf \
+		/usr/share/qt4/mkspecs/common/gcc-base.conf \
+		/usr/share/qt4/mkspecs/common/gcc-base-unix.conf \
+		/usr/share/qt4/mkspecs/common/g++-base.conf \
+		/usr/share/qt4/mkspecs/common/g++-unix.conf \
+		/usr/share/qt4/mkspecs/qconfig.pri \
+		/usr/share/qt4/mkspecs/features/qt_functions.prf \
+		/usr/share/qt4/mkspecs/features/qt_config.prf \
+		/usr/share/qt4/mkspecs/features/exclusive_builds.prf \
+		/usr/share/qt4/mkspecs/features/default_pre.prf \
+		/usr/share/qt4/mkspecs/features/release.prf \
+		/usr/share/qt4/mkspecs/features/default_post.prf \
+		/usr/share/qt4/mkspecs/features/shared.prf \
+		/usr/share/qt4/mkspecs/features/unix/gdb_dwarf_index.prf \
+		/usr/share/qt4/mkspecs/features/warn_on.prf \
+		/usr/share/qt4/mkspecs/features/qt.prf \
+		/usr/share/qt4/mkspecs/features/unix/thread.prf \
+		/usr/share/qt4/mkspecs/features/moc.prf \
+		/usr/share/qt4/mkspecs/features/resources.prf \
+		/usr/share/qt4/mkspecs/features/uic.prf \
+		/usr/share/qt4/mkspecs/features/yacc.prf \
+		/usr/share/qt4/mkspecs/features/lex.prf \
+		/usr/share/qt4/mkspecs/features/include_source_dir.prf \
+		CS331_HW05.pro
+QMAKE_TARGET  = CS331_HW05
+DESTDIR       = 
+TARGET        = CS331_HW05
+
+first: all
+####### Implicit rules
+
+.SUFFIXES: .o .c .cpp .cc .cxx .C
+
+.cpp.o:
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o "$@" "$<"
+
+.cc.o:
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o "$@" "$<"
+
+.cxx.o:
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o "$@" "$<"
+
+.C.o:
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o "$@" "$<"
+
+.c.o:
+	$(CC) -c $(CFLAGS) $(INCPATH) -o "$@" "$<"
+
+####### Build rules
+
+all: Makefile $(TARGET)
+
+$(TARGET):  $(OBJECTS)  
+	$(LINK) $(LFLAGS) -o $(TARGET) $(OBJECTS) $(OBJCOMP) $(LIBS)
+
+Makefile: CS331_HW05.pro  /usr/share/qt4/mkspecs/linux-g++-64/qmake.conf /usr/share/qt4/mkspecs/common/unix.conf \
+		/usr/share/qt4/mkspecs/common/linux.conf \
+		/usr/share/qt4/mkspecs/common/gcc-base.conf \
+		/usr/share/qt4/mkspecs/common/gcc-base-unix.conf \
+		/usr/share/qt4/mkspecs/common/g++-base.conf \
+		/usr/share/qt4/mkspecs/common/g++-unix.conf \
+		/usr/share/qt4/mkspecs/qconfig.pri \
+		/usr/share/qt4/mkspecs/features/qt_functions.prf \
+		/usr/share/qt4/mkspecs/features/qt_config.prf \
+		/usr/share/qt4/mkspecs/features/exclusive_builds.prf \
+		/usr/share/qt4/mkspecs/features/default_pre.prf \
+		/usr/share/qt4/mkspecs/features/release.prf \
+		/usr/share/qt4/mkspecs/features/default_post.prf \
+		/usr/share/qt4/mkspecs/features/shared.prf \
+		/usr/share/qt4/mkspecs/features/unix/gdb_dwarf_index.prf \
+		/usr/share/qt4/mkspecs/features/warn_on.prf \
+		/usr/share/qt4/mkspecs/features/qt.prf \
+		/usr/share/qt4/mkspecs/features/unix/thread.prf \
+		/usr/share/qt4/mkspecs/features/moc.prf \
+		/usr/share/qt4/mkspecs/features/resources.prf \
+		/usr/share/qt4/mkspecs/features/uic.prf \
+		/usr/share/qt4/mkspecs/features/yacc.prf \
+		/usr/share/qt4/mkspecs/features/lex.prf \
+		/usr/share/qt4/mkspecs/features/include_source_dir.prf \
+		/usr/lib/x86_64-linux-gnu/libQtGui.prl \
+		/usr/lib/x86_64-linux-gnu/libQtCore.prl
+	$(QMAKE) -o Makefile CS331_HW05.pro
+/usr/share/qt4/mkspecs/common/unix.conf:
+/usr/share/qt4/mkspecs/common/linux.conf:
+/usr/share/qt4/mkspecs/common/gcc-base.conf:
+/usr/share/qt4/mkspecs/common/gcc-base-unix.conf:
+/usr/share/qt4/mkspecs/common/g++-base.conf:
+/usr/share/qt4/mkspecs/common/g++-unix.conf:
+/usr/share/qt4/mkspecs/qconfig.pri:
+/usr/share/qt4/mkspecs/features/qt_functions.prf:
+/usr/share/qt4/mkspecs/features/qt_config.prf:
+/usr/share/qt4/mkspecs/features/exclusive_builds.prf:
+/usr/share/qt4/mkspecs/features/default_pre.prf:
+/usr/share/qt4/mkspecs/features/release.prf:
+/usr/share/qt4/mkspecs/features/default_post.prf:
+/usr/share/qt4/mkspecs/features/shared.prf:
+/usr/share/qt4/mkspecs/features/unix/gdb_dwarf_index.prf:
+/usr/share/qt4/mkspecs/features/warn_on.prf:
+/usr/share/qt4/mkspecs/features/qt.prf:
+/usr/share/qt4/mkspecs/features/unix/thread.prf:
+/usr/share/qt4/mkspecs/features/moc.prf:
+/usr/share/qt4/mkspecs/features/resources.prf:
+/usr/share/qt4/mkspecs/features/uic.prf:
+/usr/share/qt4/mkspecs/features/yacc.prf:
+/usr/share/qt4/mkspecs/features/lex.prf:
+/usr/share/qt4/mkspecs/features/include_source_dir.prf:
+/usr/lib/x86_64-linux-gnu/libQtGui.prl:
+/usr/lib/x86_64-linux-gnu/libQtCore.prl:
+qmake:  FORCE
+	@$(QMAKE) -o Makefile CS331_HW05.pro
+
+dist: 
+	@$(CHK_DIR_EXISTS) .tmp/CS331_HW051.0.0 || $(MKDIR) .tmp/CS331_HW051.0.0 
+	$(COPY_FILE) --parents $(SOURCES) $(DIST) .tmp/CS331_HW051.0.0/ && $(COPY_FILE) --parents CardDeck.h CardHand.h .tmp/CS331_HW051.0.0/ && $(COPY_FILE) --parents CardDeck.cpp CardHand.cpp main.cpp .tmp/CS331_HW051.0.0/ && (cd `dirname .tmp/CS331_HW051.0.0` && $(TAR) CS331_HW051.0.0.tar CS331_HW051.0.0 && $(COMPRESS) CS331_HW051.0.0.tar) && $(MOVE) `dirname .tmp/CS331_HW051.0.0`/CS331_HW051.0.0.tar.gz . && $(DEL_FILE) -r .tmp/CS331_HW051.0.0
+
+
+clean:compiler_clean 
+	-$(DEL_FILE) $(OBJECTS)
+	-$(DEL_FILE) *~ core *.core
+
+
+####### Sub-libraries
+
+distclean: clean
+	-$(DEL_FILE) $(TARGET) 
+	-$(DEL_FILE) Makefile
+
+
+check: first
+
+mocclean: compiler_moc_header_clean compiler_moc_source_clean
+
+mocables: compiler_moc_header_make_all compiler_moc_source_make_all
+
+compiler_moc_header_make_all:
+compiler_moc_header_clean:
+compiler_rcc_make_all:
+compiler_rcc_clean:
+compiler_image_collection_make_all: qmake_image_collection.cpp
+compiler_image_collection_clean:
+	-$(DEL_FILE) qmake_image_collection.cpp
+compiler_moc_source_make_all:
+compiler_moc_source_clean:
+compiler_uic_make_all:
+compiler_uic_clean:
+compiler_yacc_decl_make_all:
+compiler_yacc_decl_clean:
+compiler_yacc_impl_make_all:
+compiler_yacc_impl_clean:
+compiler_lex_make_all:
+compiler_lex_clean:
+compiler_clean: 
+
+####### Compile
+
+CardDeck.o: CardDeck.cpp CardDeck.h \
+		CardHand.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o CardDeck.o CardDeck.cpp
+
+CardHand.o: CardHand.cpp CardHand.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o CardHand.o CardHand.cpp
+
+main.o: main.cpp CardDeck.h \
+		CardHand.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o main.cpp
+
+####### Install
+
+install:   FORCE
+
+uninstall:   FORCE
+
+FORCE:
+
+]0;chenyu@chenyu-VirtualBox: ~/CS/CS331_HW05[01;32mchenyu@chenyu-VirtualBox[00m:[01;34m~/CS/CS331_HW05[00m$ cat CS331_HW05.pro 
+######################################################################
+# Automatically generated by qmake (2.01a) Tue Dec 17 00:36:41 2019
+######################################################################
+
+TEMPLATE = app
+TARGET = 
+DEPENDPATH += .
+INCLUDEPATH += .
+
+# Input
+HEADERS += CardDeck.h CardHand.h
+SOURCES += CardDeck.cpp CardHand.cpp main.cpp
+]0;chenyu@chenyu-VirtualBox: ~/CS/CS331_HW05[01;32mchenyu@chenyu-VirtualBox[00m:[01;34m~/CS/CS331_HW05[00m$ mkae [K[K[K[Kake
+g++ -c -m64 -pipe -O2 -Wall -W -D_REENTRANT -DQT_NO_DEBUG -DQT_GUI_LIB -DQT_CORE_LIB -DQT_SHARED -I/usr/share/qt4/mkspecs/linux-g++-64 -I. -I/usr/include/qt4/QtCore -I/usr/include/qt4/QtGui -I/usr/include/qt4 -I. -I. -o CardDeck.o CardDeck.cpp
+g++ -c -m64 -pipe -O2 -Wall -W -D_REENTRANT -DQT_NO_DEBUG -DQT_GUI_LIB -DQT_CORE_LIB -DQT_SHARED -I/usr/share/qt4/mkspecs/linux-g++-64 -I. -I/usr/include/qt4/QtCore -I/usr/include/qt4/QtGui -I/usr/include/qt4 -I. -I. -o CardHand.o CardHand.cpp
+[01m[KCardHand.cpp:[m[K In constructor ‘[01m[KCardHand::CardHand()[m[K’:
+[01m[KCardHand.cpp:12:6:[m[K [01;35m[Kwarning: [m[Kunused variable ‘[01m[Kcard[m[K’ [[01;35m[K-Wunused-variable[m[K]
+  int [01;35m[Kcard[m[K[52];
+      [01;35m[K^~~~[m[K
+[01m[KCardHand.cpp:13:6:[m[K [01;35m[Kwarning: [m[Kunused variable ‘[01m[Ksize[m[K’ [[01;35m[K-Wunused-variable[m[K]
+  int [01;35m[Ksize[m[K;
+      [01;35m[K^~~~[m[K
+[01m[KCardHand.cpp:[m[K In member function ‘[01m[Kint CardHand::getValue()[m[K’:
+[01m[KCardHand.cpp:25:13:[m[K [01;35m[Kwarning: [m[Kunused variable ‘[01m[Kn[m[K’ [[01;35m[K-Wunused-variable[m[K]
+         int [01;35m[Kn[m[K=0;
+             [01;35m[K^[m[K
+g++ -c -m64 -pipe -O2 -Wall -W -D_REENTRANT -DQT_NO_DEBUG -DQT_GUI_LIB -DQT_CORE_LIB -DQT_SHARED -I/usr/share/qt4/mkspecs/linux-g++-64 -I. -I/usr/include/qt4/QtCore -I/usr/include/qt4/QtGui -I/usr/include/qt4 -I. -I. -o main.o main.cpp
+g++ -m64 -Wl,-O1 -o CS331_HW05 CardDeck.o CardHand.o main.o    -L/usr/lib/x86_64-linux-gnu -lQtGui -lQtCore -lpthread 
+]0;chenyu@chenyu-VirtualBox: ~/CS/CS331_HW05[01;32mchenyu@chenyu-VirtualBox[00m:[01;34m~/CS/CS331_HW05[00m$ ./CS331_HW05 
+Gtk-[1;32mMessage[0m: [34m00:37:13.143[0m: Failed to load module "canberra-gtk-module"
+How many cards in a hand?Here is your hand:
+9;9;2;5;6
+Your score is : 0 points.
+Here is your hand:
+Here is your hand:
+My score is: 0 points.
+I win !!
+Here is your hand:
+5;5;10;13;4
+Your score is : 3 points.
+Here is your hand:
+Here is your hand:
+My score is: 7 points.
+I win !!
+Here is your hand:
+5;12;10;4;1
+Your score is : 6 points.
+Here is your hand:
+Here is your hand:
+My score is: 2 points.
+you win !!
+Here is your hand:
+4;12;7;13;9
+Your score is : 5 points.
+Here is your hand:
+Here is your hand:
+My score is: 10 points.
+I win !!
+Here is your hand:
+10;11;7;2;3
+Your score is : 1 points.
+Here is your hand:
+Here is your hand:
+My score is: 2 points.
+I win !!
+]0;chenyu@chenyu-VirtualBox: ~/CS/CS331_HW05[01;32mchenyu@chenyu-VirtualBox[00m:[01;34m~/CS/CS331_HW05[00m$ make distclean
+rm -f CardDeck.o CardHand.o main.o
+rm -f *~ core *.core
+rm -f CS331_HW05 
+rm -f Makefile
+]0;chenyu@chenyu-VirtualBox: ~/CS/CS331_HW05[01;32mchenyu@chenyu-VirtualBox[00m:[01;34m~/CS/CS331_HW05[00m$ exit
+exit
+
+Script done on 2019-12-17 00:38:14-0500
