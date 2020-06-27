@@ -1,0 +1,11 @@
+'''
+扑克游戏 不同牌分数不同 最后计算得分
+Playing cards have been in existence in various forms for more than 600 years. They are used for a large number of games of chance and are a favorite subject for exercises in math, statistics, and computer science.
+In Europe, and the West, there is a standard card set, called a deck, which is familiar to most people. It consists of 52 cards, divided into 4 subsets, called suits . Each suit consists of 13 cards designated by the names: A (Ace), 2, 3, 4, 5, 6, 7, 8, 9, T (Ten), J (Jack), Q (Queen), K (King). Many card games begin by supplying each player with a small set of cards (randomly extracted from the deck) called a hand.
+In this exercise you design data types to represent a deck and a hand of cards. Later you will revisit these clases to elaborate the rules and add graphics. Figure 6.5 suggests one way of representing these classes.
+Following are some hints:
+* The CardDeck constructor generates a complete deck of cards in a convenient order. 
+* CardDeck::deal(int k) should use the random() function from <cstdlib> to pick k Card objects from the deck (removing each one from the deck after it is picked) to fill a CardHand object.
+* Initialize the random() function from the system clock so that the results will be different each time you run the application. The syntax is   srandom(time(0));  
+* Evaluate the hand, using the rules of the game of bridge : Ace = 4, King = 3, Queen = 2, Jack = 1; all other cards have zero value. You can use this formula to calculate the return values for the getValue() functions. 
+'''
