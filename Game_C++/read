@@ -1,0 +1,13 @@
+'''
+一圈格子每个被从0开始依次标记 开始前选定哪个数为赢和输，每次扔一对塞子，前进对应的步数，玩家和电脑依次进行，直到一方赢或输
+Given the UML diagram in Figure 2.5, define the class, and each member function specified, for an enhanced Fraction class. You can use Example 2.4 as a starting point.
+* When the program starts, the user is asked to specify how many spaces there are on the game board. There must be at least five spaces. 
+* The computer then randomly selects two spaces (excluding space numbers 0 and 1): One of the selected spaces is The Goal. The other is The Pit. 
+* The computer announces the two special spaces.
+* Play then starts from space #0: Each player, in turn, "rolls" a pair of dice and "moves" to another space by advancing N spaces (where N is the number that came up on the dice). For example, using the sample game board with 12 spaces, if the user rolled a 10 (6 plus 4) on her first turn and a 7 (3 + 4) on her second turn, then she would land on space #5. That's where she would start on her next turn. 
+* The user and the computer take turns rolling the dice and moving around the board. Each move is displayed on the screen (as text, not graphics; e.g., "You are now on space #3").
+* The game continues until one player lands on The Goal (and wins the game) or on The Pit (and loses the game).
+* The computer announces the outcome of each game and keeps track of each player's wins and losses. 
+* The user can choose single play (user must press <Enter> for each roll of the dice) or continuous play (dice are automatically rolled and play continues until someone wins).
+* After each game the user can choose to quit or play another game.
+'''
