@@ -1,0 +1,560 @@
+Script started on 2019-11-14 02:23:50-0500
+]0;chenyu@chenyu-VirtualBox: ~/Desktop/CS331_HW03[01;32mchenyu@chenyu-VirtualBox[00m:[01;34m~/Desktop/CS331_HW03[00m$ exitcat main.cpp contactfactory.h conntactfactory.cpp contact.h contact.cpp contactlist.h contactlist..cpp[1Pcpp[C[C[C[C
+//
+//Programer:Chenyu Wang 
+//
+//  main.cpp
+//  CS331_HW03
+//  Brief Description: Random cantact information in contactfactory class can be add and remove to contactlist class. User can get the origial contact information and one category mailaddress information and one category phone number
+//
+//  Created by Chenyu Wang on 10/29/19.
+//  Last modifiction date on 11/14/19.
+//  Copyright © 2019 chenyu wang. All rights reserved.
+//
+
+#include <QStringList>
+#include <QTextStream>
+#include "contactfactory.h"
+#include <QCoreApplication>
+
+void createRandomContacts(ContactList& cl, int n=10){
+    static ContactFactory cf;
+    for (int i=0;i<n;++i){
+        cf>>cl;
+    }
+}
+
+int main(int argc, char *argv[]) {
+    QCoreApplication a(argc, argv);
+    QTextStream cout(stdout);
+    ContactList cl;
+    createRandomContacts(cl, 10);
+    
+    QString s;
+    for(int i=0;i<cl.size();i++){
+        Contact c=cl.at(i);
+        s=c.toString();
+        cout<<s.toStdString().data()<<endl;
+    }
+    
+    cout<<"category 1"<<endl;
+    QStringList l=cl.getPhoneList(1);
+    for(int i=0;i<l.size();i++){
+        s=l.at(i);
+        cout<<s.toStdString().data()<<endl;
+    }
+    
+    cout<<"category 2"<<endl;
+    QStringList list=cl.getMailingList(2);
+    for (int i=0; i<list.size();i++){
+        s=list.at(i);
+        cout<<s.toStdString().data()<<endl;
+    }
+    
+    return 0;
+}
+//
+//  contactfactory.hpp
+//  CS331_HW03
+//
+//  Created by Chenyu Wang on 10/29/19.
+//  Copyright © 2019 chenyu wang. All rights reserved.
+//
+
+#ifndef contactfactory_h_
+#define contactfactory_h_
+
+#include <QObject>
+#include <cstdlib>
+#include"time.h"
+#include"contactlist.h"
+
+class ContactFactory{
+    QList<QString> firstNameL;
+    QList<QString> lastNameL;
+    QList<QString> streetL;
+    QList<QString> cityL;
+    QList<QString> zipCodeL;
+    QList<QString> phoneNumberL;
+
+public:
+    ContactFactory();
+    void operator>>(ContactList& cl);
+    
+};
+#endif /* contactfactory_hpp */
+//
+//  contactfactory.cpp
+//  CS331_HW03
+//
+//  Created by Chenyu Wang on 10/29/19.
+//  Copyright © 2019 chenyu wang. All rights reserved.
+//
+
+#include "contactfactory.h"
+
+ContactFactory::ContactFactory()
+{
+    QString s;
+    QString firstname[10]={"Chenyu","Jason","Jack","Arraon","Xiao","Ben","Lucy","Mark","Viv","Jhon"};
+    for(int i=0;i<10;i++){
+        s="firstName: "+firstname[i];
+        firstNameL.append(s);
+    }
+   
+    QString lastname[10]={"Wang","Song","Qian","Sun","Li","Zhou","Wu","Xu","Xi","Jia"};
+    for(int i=0;i<10;i++){
+        s="LastName: "+lastname[i];
+        lastNameL.append(s);
+    }
+    
+    QString city[10]={"Malden","Boston","Qunicy","Revere","DC","Allston","New York","Beijing","Shanghai","Austin"};
+       for(int i=0;i<10;i++){
+           s="city: "+city[i];
+           cityL.append(s);
+       }
+   
+    for(int i=1;i<=50;i++){
+        s=QString::number(i)+"street";
+        streetL.append(s);
+        s="zipCode"+QString::number(i);
+        zipCodeL.append(s);
+        s="phoneNumber"+QString::number(i);
+        phoneNumberL.append(s);
+    }
+    srand(time(0));
+}
+ 
+void ContactFactory::operator>>(ContactList& cl){
+    Contact c;
+    c.firstName=firstNameL.at(rand()%10);
+    c.lastName=lastNameL.at(rand()%10);
+    c.street=streetL.at(rand()%50);
+    c.city=cityL.at(rand()%10);
+    QString s="";
+    for (int i=0;i<5;i++){
+        s=s+QString::number(rand()%10);
+    }
+    c.zipCode=s;
+    s="";
+    for (int i=0;i<10;i++){
+        s=s+QString::number(rand()%10);
+    }
+    c.phoneNumber=s;
+    c.category=rand()%3;
+    cl.add(c);
+
+}
+//
+//  contact.hpp
+//  CS331_HW03
+//
+//  Created by Chenyu Wang on 10/30/19.
+//  Copyright © 2019 chenyu wang. All rights reserved.
+//
+
+#ifndef contact_h_
+#define contact_h_
+
+#include <QObject>
+
+class Contact
+{
+public:
+    int category;
+    QString firstName;
+    QString lastName;
+    QString street;
+    QString city;
+    QString zipCode;
+    QString phoneNumber;
+
+public:
+    Contact();
+    QString toString();
+};
+
+#endif /* contact_hpp */
+//
+//  contact.cpp
+//  CS331_HW03
+//
+//  Created by Chenyu Wang on 10/30/19.
+//  Copyright © 2019 chenyu wang. All rights reserved.
+//
+
+#include "contact.h"
+
+Contact::Contact()
+{
+
+}
+
+QString Contact::toString(){
+    QString s;
+    s="Category:" +QString::number(this->category)+"\t"+ this->firstName+"\t"+ this->lastName+"\t" +this->street+"\t" +this->city+"\t" +this->zipCode+"\t" +this->phoneNumber;
+    return s;
+}
+//
+//  contactlist.hpp
+//  CS331_HW03
+//
+//  Created by Chenyu Wang on 10/30/19.
+//  Copyright © 2019 chenyu wang. All rights reserved.
+//
+
+#ifndef contactlist_h_
+#define contactlist_h_
+
+#include <QObject>
+#include "contact.h"
+#include "qlist.h"
+
+class ContactList : public QList<Contact>{
+public:
+    ContactList();
+    void add(Contact c);
+    void remove(Contact c);
+    QStringList getPhoneList(int category);
+    QStringList getMailingList(int category);
+};
+#endif /* contactlist_hpp */
+//
+//  contactlist.cpp
+//  CS331_HW03
+//
+//  Created by Chenyu Wang on 10/30/19.
+//  Copyright © 2019 chenyu wang. All rights reserved.
+//
+
+#include "contactlist.h"
+#include <QStringList>
+
+ContactList::ContactList(){
+    
+}
+
+void ContactList::add(Contact c){
+    this->append(c);
+}
+
+void ContactList::remove(Contact c){
+    QString s1=c.toString();
+    for(int i=0; i<this->size();i++){
+        Contact c2=this->at(i);
+        if(s1==c2.toString()){
+            this->removeAt(i);
+            break;
+        }
+    }
+}
+
+QStringList ContactList::getPhoneList(int category){
+    QStringList l;
+    for(int i=0;i<this->size();i++){
+        Contact c=this->at(i);
+        if(c.category==category){
+            QString s=c.firstName+" "+c.lastName+"   "+c.phoneNumber;
+            l.append(s);
+        }
+    }
+    return l;
+}
+
+QStringList ContactList::getMailingList(int category){
+    QStringList l;
+    for(int i=0;i<this->size();i++){
+        Contact c=this->at(i);
+        if(c.category==category){
+            QString s=c.street+"  "+c.city+"  "+c.zipCode;
+            l.append(s);
+        }
+    }
+    return l;
+}
+]0;chenyu@chenyu-VirtualBox: ~/Desktop/CS331_HW03[01;32mchenyu@chenyu-VirtualBox[00m:[01;34m~/Desktop/CS331_HW03[00m$ qmake -project
+]0;chenyu@chenyu-VirtualBox: ~/Desktop/CS331_HW03[01;32mchenyu@chenyu-VirtualBox[00m:[01;34m~/Desktop/CS331_HW03[00m$ qmake 
+]0;chenyu@chenyu-VirtualBox: ~/Desktop/CS331_HW03[01;32mchenyu@chenyu-VirtualBox[00m:[01;34m~/Desktop/CS331_HW03[00m$ cat [K[K[K[Kls
+contact.cpp         contact.h        CS331_HW03.pro  Makefile
+contactfactory.cpp  contactlist.cpp  hw03script
+contactfactory.h    contactlist.h    main.cpp
+]0;chenyu@chenyu-VirtualBox: ~/Desktop/CS331_HW03[01;32mchenyu@chenyu-VirtualBox[00m:[01;34m~/Desktop/CS331_HW03[00m$ cat CS331_HW03.pro Makefile 
+######################################################################
+# Automatically generated by qmake (2.01a) Thu Nov 14 02:24:11 2019
+######################################################################
+
+TEMPLATE = app
+TARGET = 
+DEPENDPATH += .
+INCLUDEPATH += .
+
+# Input
+HEADERS += contact.h contactfactory.h contactlist.h
+SOURCES += contact.cpp contactfactory.cpp contactlist.cpp main.cpp
+#############################################################################
+# Makefile for building: CS331_HW03
+# Generated by qmake (2.01a) (Qt 4.8.7) on: Thu Nov 14 02:24:13 2019
+# Project:  CS331_HW03.pro
+# Template: app
+# Command: /usr/lib/x86_64-linux-gnu/qt4/bin/qmake -o Makefile CS331_HW03.pro
+#############################################################################
+
+####### Compiler, tools and options
+
+CC            = gcc
+CXX           = g++
+DEFINES       = -DQT_NO_DEBUG -DQT_GUI_LIB -DQT_CORE_LIB -DQT_SHARED
+CFLAGS        = -m64 -pipe -O2 -Wall -W -D_REENTRANT $(DEFINES)
+CXXFLAGS      = -m64 -pipe -O2 -Wall -W -D_REENTRANT $(DEFINES)
+INCPATH       = -I/usr/share/qt4/mkspecs/linux-g++-64 -I. -I/usr/include/qt4/QtCore -I/usr/include/qt4/QtGui -I/usr/include/qt4 -I. -I.
+LINK          = g++
+LFLAGS        = -m64 -Wl,-O1
+LIBS          = $(SUBLIBS)  -L/usr/lib/x86_64-linux-gnu -lQtGui -lQtCore -lpthread 
+AR            = ar cqs
+RANLIB        = 
+QMAKE         = /usr/lib/x86_64-linux-gnu/qt4/bin/qmake
+TAR           = tar -cf
+COMPRESS      = gzip -9f
+COPY          = cp -f
+SED           = sed
+COPY_FILE     = $(COPY)
+COPY_DIR      = $(COPY) -r
+STRIP         = strip
+INSTALL_FILE  = install -m 644 -p
+INSTALL_DIR   = $(COPY_DIR)
+INSTALL_PROGRAM = install -m 755 -p
+DEL_FILE      = rm -f
+SYMLINK       = ln -f -s
+DEL_DIR       = rmdir
+MOVE          = mv -f
+CHK_DIR_EXISTS= test -d
+MKDIR         = mkdir -p
+
+####### Output directory
+
+OBJECTS_DIR   = ./
+
+####### Files
+
+SOURCES       = contact.cpp \
+		contactfactory.cpp \
+		contactlist.cpp \
+		main.cpp 
+OBJECTS       = contact.o \
+		contactfactory.o \
+		contactlist.o \
+		main.o
+DIST          = /usr/share/qt4/mkspecs/common/unix.conf \
+		/usr/share/qt4/mkspecs/common/linux.conf \
+		/usr/share/qt4/mkspecs/common/gcc-base.conf \
+		/usr/share/qt4/mkspecs/common/gcc-base-unix.conf \
+		/usr/share/qt4/mkspecs/common/g++-base.conf \
+		/usr/share/qt4/mkspecs/common/g++-unix.conf \
+		/usr/share/qt4/mkspecs/qconfig.pri \
+		/usr/share/qt4/mkspecs/features/qt_functions.prf \
+		/usr/share/qt4/mkspecs/features/qt_config.prf \
+		/usr/share/qt4/mkspecs/features/exclusive_builds.prf \
+		/usr/share/qt4/mkspecs/features/default_pre.prf \
+		/usr/share/qt4/mkspecs/features/release.prf \
+		/usr/share/qt4/mkspecs/features/default_post.prf \
+		/usr/share/qt4/mkspecs/features/shared.prf \
+		/usr/share/qt4/mkspecs/features/unix/gdb_dwarf_index.prf \
+		/usr/share/qt4/mkspecs/features/warn_on.prf \
+		/usr/share/qt4/mkspecs/features/qt.prf \
+		/usr/share/qt4/mkspecs/features/unix/thread.prf \
+		/usr/share/qt4/mkspecs/features/moc.prf \
+		/usr/share/qt4/mkspecs/features/resources.prf \
+		/usr/share/qt4/mkspecs/features/uic.prf \
+		/usr/share/qt4/mkspecs/features/yacc.prf \
+		/usr/share/qt4/mkspecs/features/lex.prf \
+		/usr/share/qt4/mkspecs/features/include_source_dir.prf \
+		CS331_HW03.pro
+QMAKE_TARGET  = CS331_HW03
+DESTDIR       = 
+TARGET        = CS331_HW03
+
+first: all
+####### Implicit rules
+
+.SUFFIXES: .o .c .cpp .cc .cxx .C
+
+.cpp.o:
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o "$@" "$<"
+
+.cc.o:
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o "$@" "$<"
+
+.cxx.o:
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o "$@" "$<"
+
+.C.o:
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o "$@" "$<"
+
+.c.o:
+	$(CC) -c $(CFLAGS) $(INCPATH) -o "$@" "$<"
+
+####### Build rules
+
+all: Makefile $(TARGET)
+
+$(TARGET):  $(OBJECTS)  
+	$(LINK) $(LFLAGS) -o $(TARGET) $(OBJECTS) $(OBJCOMP) $(LIBS)
+
+Makefile: CS331_HW03.pro  /usr/share/qt4/mkspecs/linux-g++-64/qmake.conf /usr/share/qt4/mkspecs/common/unix.conf \
+		/usr/share/qt4/mkspecs/common/linux.conf \
+		/usr/share/qt4/mkspecs/common/gcc-base.conf \
+		/usr/share/qt4/mkspecs/common/gcc-base-unix.conf \
+		/usr/share/qt4/mkspecs/common/g++-base.conf \
+		/usr/share/qt4/mkspecs/common/g++-unix.conf \
+		/usr/share/qt4/mkspecs/qconfig.pri \
+		/usr/share/qt4/mkspecs/features/qt_functions.prf \
+		/usr/share/qt4/mkspecs/features/qt_config.prf \
+		/usr/share/qt4/mkspecs/features/exclusive_builds.prf \
+		/usr/share/qt4/mkspecs/features/default_pre.prf \
+		/usr/share/qt4/mkspecs/features/release.prf \
+		/usr/share/qt4/mkspecs/features/default_post.prf \
+		/usr/share/qt4/mkspecs/features/shared.prf \
+		/usr/share/qt4/mkspecs/features/unix/gdb_dwarf_index.prf \
+		/usr/share/qt4/mkspecs/features/warn_on.prf \
+		/usr/share/qt4/mkspecs/features/qt.prf \
+		/usr/share/qt4/mkspecs/features/unix/thread.prf \
+		/usr/share/qt4/mkspecs/features/moc.prf \
+		/usr/share/qt4/mkspecs/features/resources.prf \
+		/usr/share/qt4/mkspecs/features/uic.prf \
+		/usr/share/qt4/mkspecs/features/yacc.prf \
+		/usr/share/qt4/mkspecs/features/lex.prf \
+		/usr/share/qt4/mkspecs/features/include_source_dir.prf \
+		/usr/lib/x86_64-linux-gnu/libQtGui.prl \
+		/usr/lib/x86_64-linux-gnu/libQtCore.prl
+	$(QMAKE) -o Makefile CS331_HW03.pro
+/usr/share/qt4/mkspecs/common/unix.conf:
+/usr/share/qt4/mkspecs/common/linux.conf:
+/usr/share/qt4/mkspecs/common/gcc-base.conf:
+/usr/share/qt4/mkspecs/common/gcc-base-unix.conf:
+/usr/share/qt4/mkspecs/common/g++-base.conf:
+/usr/share/qt4/mkspecs/common/g++-unix.conf:
+/usr/share/qt4/mkspecs/qconfig.pri:
+/usr/share/qt4/mkspecs/features/qt_functions.prf:
+/usr/share/qt4/mkspecs/features/qt_config.prf:
+/usr/share/qt4/mkspecs/features/exclusive_builds.prf:
+/usr/share/qt4/mkspecs/features/default_pre.prf:
+/usr/share/qt4/mkspecs/features/release.prf:
+/usr/share/qt4/mkspecs/features/default_post.prf:
+/usr/share/qt4/mkspecs/features/shared.prf:
+/usr/share/qt4/mkspecs/features/unix/gdb_dwarf_index.prf:
+/usr/share/qt4/mkspecs/features/warn_on.prf:
+/usr/share/qt4/mkspecs/features/qt.prf:
+/usr/share/qt4/mkspecs/features/unix/thread.prf:
+/usr/share/qt4/mkspecs/features/moc.prf:
+/usr/share/qt4/mkspecs/features/resources.prf:
+/usr/share/qt4/mkspecs/features/uic.prf:
+/usr/share/qt4/mkspecs/features/yacc.prf:
+/usr/share/qt4/mkspecs/features/lex.prf:
+/usr/share/qt4/mkspecs/features/include_source_dir.prf:
+/usr/lib/x86_64-linux-gnu/libQtGui.prl:
+/usr/lib/x86_64-linux-gnu/libQtCore.prl:
+qmake:  FORCE
+	@$(QMAKE) -o Makefile CS331_HW03.pro
+
+dist: 
+	@$(CHK_DIR_EXISTS) .tmp/CS331_HW031.0.0 || $(MKDIR) .tmp/CS331_HW031.0.0 
+	$(COPY_FILE) --parents $(SOURCES) $(DIST) .tmp/CS331_HW031.0.0/ && $(COPY_FILE) --parents contact.h contactfactory.h contactlist.h .tmp/CS331_HW031.0.0/ && $(COPY_FILE) --parents contact.cpp contactfactory.cpp contactlist.cpp main.cpp .tmp/CS331_HW031.0.0/ && (cd `dirname .tmp/CS331_HW031.0.0` && $(TAR) CS331_HW031.0.0.tar CS331_HW031.0.0 && $(COMPRESS) CS331_HW031.0.0.tar) && $(MOVE) `dirname .tmp/CS331_HW031.0.0`/CS331_HW031.0.0.tar.gz . && $(DEL_FILE) -r .tmp/CS331_HW031.0.0
+
+
+clean:compiler_clean 
+	-$(DEL_FILE) $(OBJECTS)
+	-$(DEL_FILE) *~ core *.core
+
+
+####### Sub-libraries
+
+distclean: clean
+	-$(DEL_FILE) $(TARGET) 
+	-$(DEL_FILE) Makefile
+
+
+check: first
+
+mocclean: compiler_moc_header_clean compiler_moc_source_clean
+
+mocables: compiler_moc_header_make_all compiler_moc_source_make_all
+
+compiler_moc_header_make_all:
+compiler_moc_header_clean:
+compiler_rcc_make_all:
+compiler_rcc_clean:
+compiler_image_collection_make_all: qmake_image_collection.cpp
+compiler_image_collection_clean:
+	-$(DEL_FILE) qmake_image_collection.cpp
+compiler_moc_source_make_all:
+compiler_moc_source_clean:
+compiler_uic_make_all:
+compiler_uic_clean:
+compiler_yacc_decl_make_all:
+compiler_yacc_decl_clean:
+compiler_yacc_impl_make_all:
+compiler_yacc_impl_clean:
+compiler_lex_make_all:
+compiler_lex_clean:
+compiler_clean: 
+
+####### Compile
+
+contact.o: contact.cpp contact.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o contact.o contact.cpp
+
+contactfactory.o: contactfactory.cpp contactfactory.h \
+		contactlist.h \
+		contact.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o contactfactory.o contactfactory.cpp
+
+contactlist.o: contactlist.cpp contactlist.h \
+		contact.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o contactlist.o contactlist.cpp
+
+main.o: main.cpp contactfactory.h \
+		contactlist.h \
+		contact.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o main.cpp
+
+####### Install
+
+install:   FORCE
+
+uninstall:   FORCE
+
+FORCE:
+
+]0;chenyu@chenyu-VirtualBox: ~/Desktop/CS331_HW03[01;32mchenyu@chenyu-VirtualBox[00m:[01;34m~/Desktop/CS331_HW03[00m$ MAKE[K[K[K[Kmake 
+g++ -c -m64 -pipe -O2 -Wall -W -D_REENTRANT -DQT_NO_DEBUG -DQT_GUI_LIB -DQT_CORE_LIB -DQT_SHARED -I/usr/share/qt4/mkspecs/linux-g++-64 -I. -I/usr/include/qt4/QtCore -I/usr/include/qt4/QtGui -I/usr/include/qt4 -I. -I. -o contact.o contact.cpp
+g++ -c -m64 -pipe -O2 -Wall -W -D_REENTRANT -DQT_NO_DEBUG -DQT_GUI_LIB -DQT_CORE_LIB -DQT_SHARED -I/usr/share/qt4/mkspecs/linux-g++-64 -I. -I/usr/include/qt4/QtCore -I/usr/include/qt4/QtGui -I/usr/include/qt4 -I. -I. -o contactfactory.o contactfactory.cpp
+g++ -c -m64 -pipe -O2 -Wall -W -D_REENTRANT -DQT_NO_DEBUG -DQT_GUI_LIB -DQT_CORE_LIB -DQT_SHARED -I/usr/share/qt4/mkspecs/linux-g++-64 -I. -I/usr/include/qt4/QtCore -I/usr/include/qt4/QtGui -I/usr/include/qt4 -I. -I. -o contactlist.o contactlist.cpp
+g++ -c -m64 -pipe -O2 -Wall -W -D_REENTRANT -DQT_NO_DEBUG -DQT_GUI_LIB -DQT_CORE_LIB -DQT_SHARED -I/usr/share/qt4/mkspecs/linux-g++-64 -I. -I/usr/include/qt4/QtCore -I/usr/include/qt4/QtGui -I/usr/include/qt4 -I. -I. -o main.o main.cpp
+g++ -m64 -Wl,-O1 -o CS331_HW03 contact.o contactfactory.o contactlist.o main.o    -L/usr/lib/x86_64-linux-gnu -lQtGui -lQtCore -lpthread 
+]0;chenyu@chenyu-VirtualBox: ~/Desktop/CS331_HW03[01;32mchenyu@chenyu-VirtualBox[00m:[01;34m~/Desktop/CS331_HW03[00m$ ./S[KCS331_HW03 
+Category:1	firstName: Jhon	LastName: Wang	24street	city: DC	00164	1553889073
+Category:1	firstName: Lucy	LastName: Xu	49street	city: Qunicy	65055	4145505533
+Category:1	firstName: Ben	LastName: Xi	28street	city: Malden	85115	4914832557
+Category:2	firstName: Chenyu	LastName: Jia	39street	city: Allston	49214	5395015526
+Category:1	firstName: Mark	LastName: Wu	2street	city: Revere	66532	4623499511
+Category:2	firstName: Lucy	LastName: Li	32street	city: Revere	43815	5243599262
+Category:1	firstName: Jason	LastName: Wang	49street	city: DC	59620	7483817198
+Category:1	firstName: Lucy	LastName: Qian	6street	city: Austin	06043	3043000965
+Category:1	firstName: Arraon	LastName: Jia	20street	city: Shanghai	72501	6100810426
+Category:2	firstName: Ben	LastName: Wu	44street	city: Malden	84370	8069949121
+category 1
+firstName: Jhon LastName: Wang   1553889073
+firstName: Lucy LastName: Xu   4145505533
+firstName: Ben LastName: Xi   4914832557
+firstName: Mark LastName: Wu   4623499511
+firstName: Jason LastName: Wang   7483817198
+firstName: Lucy LastName: Qian   3043000965
+firstName: Arraon LastName: Jia   6100810426
+category 2
+39street  city: Allston  49214
+32street  city: Revere  43815
+44street  city: Malden  84370
+]0;chenyu@chenyu-VirtualBox: ~/Desktop/CS331_HW03[01;32mchenyu@chenyu-VirtualBox[00m:[01;34m~/Desktop/CS331_HW03[00m$ EX[K[KEX[K[Kexit
+exit
+
+Script done on 2019-11-14 02:25:52-0500
